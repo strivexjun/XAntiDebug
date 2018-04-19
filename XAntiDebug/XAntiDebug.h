@@ -26,6 +26,7 @@
 #endif // !_WIN64
 
 
+
 #define XAD_NTDLL	L"ntdll.dll"
 #define	XAD_PEHAD	0x1000
 

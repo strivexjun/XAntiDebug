@@ -294,7 +294,7 @@ DWORD64 getTEB64()
     return reg.v;
 }
 
-DWORD64 __cdecl GetModuleHandle64(wchar_t* lpModuleName)
+DWORD64 __cdecl GetModuleHandle64(const wchar_t* lpModuleName)
 {
 	if (!g_isWow64)
 		return 0;
@@ -379,7 +379,7 @@ DWORD64 getLdrGetProcedureAddress()
     // lazy search, there is no need to use binsearch for just one function
     for (DWORD i = 0; i < ied.NumberOfFunctions; i++)
     {
-        if (!cmpMem64("LdrGetProcedureAddress", modBase + nameTable[i], sizeof("LdrGetProcedureAddress")))
+        if (!cmpMem64((void*)"LdrGetProcedureAddress", modBase + nameTable[i], sizeof("LdrGetProcedureAddress")))
             continue;
         else
             return modBase + rvaTable[ordTable[i]];
@@ -408,7 +408,7 @@ VOID __cdecl SetLastErrorFromX64Call(DWORD64 status)
 	}
 }
 
-DWORD64 __cdecl GetProcAddress64(DWORD64 hModule, char* funcName)
+DWORD64 __cdecl GetProcAddress64(DWORD64 hModule, const char* funcName)
 {
     static DWORD64 _LdrGetProcedureAddress = 0;
     if (0 == _LdrGetProcedureAddress)
