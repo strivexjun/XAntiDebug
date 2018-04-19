@@ -114,17 +114,22 @@ XAD_STATUS XAntiDebug::initialize()
 	if (_isX64)
 	{
 		_MyQueryInfomationProcess  = (DWORD64)GetProcAddress64(GetModuleHandle64(XAD_NTDLL), "ZwQueryInformationProcess");
+		if (_MyQueryInfomationProcess == NULL)
+		{
+			return XAD_ERROR_NTAPI;
+		}
 		_MyQueryInfomationProcess -= (DWORD64)GetModuleHandle64(XAD_NTDLL);
 	}
 	else
 	{
 		_MyQueryInfomationProcess = (DWORD)GetProcAddress(GetModuleHandle(XAD_NTDLL), "ZwQueryInformationProcess");
+		if (_MyQueryInfomationProcess == NULL)
+		{
+			return XAD_ERROR_NTAPI;
+		}
 		_MyQueryInfomationProcess -= (DWORD)GetModuleHandle(XAD_NTDLL);
 	}
-	if (_MyQueryInfomationProcess == NULL)
-	{
-		return XAD_ERROR_NTAPI;
-	}
+
 
 	// rva to raw
 	DWORD	fileOffset = 0;
@@ -244,7 +249,7 @@ XAD_STATUS XAntiDebug::initialize()
 		0x0F, 0x05,					// syscall
 		0xC3						// retn
 	};
-	_executePage = VirtualAllocEx((HANDLE)-1, 0, 0x1000, MEM_COMMIT | MEM_TOP_DOWN, PAGE_EXECUTE_READWRITE);
+	_executePage = VirtualAllocEx((HANDLE)-1, 0, 0x1000, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
 	if (_executePage == NULL)
 	{
 		return XAD_ERROR_ALLOCMEM;
@@ -254,6 +259,11 @@ XAD_STATUS XAntiDebug::initialize()
 	ULONG_PTR		pSysCall;
 
 	srand(GetTickCount());
+	unsigned char *pRandChar = (unsigned char *)_executePage;
+	for (int i = 0; i < 0x1000; i++)
+	{
+		pRandChar[i] = LOBYTE(rand());
+	}
 	random = rand() % 0x800 + 0x100;
 
 	//copy ssdt index to opcode
