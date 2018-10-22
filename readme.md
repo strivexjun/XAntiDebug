@@ -1,10 +1,9 @@
-# VMProtect 3.x Anti-debug Method Improved
-
-## Quick summary:
-
-- IsDebuggerPresent
-- CheckRemoteDebuggerPresent
-- CloseHandle(0xDEADC0DE)
-- ZwQueryInformationProcess(ProcessDebugObjectHandle), called correctly 
-- crc32 check on direct syscall
-- ZwQueryInformationProcess(ProcessDebugObjectHandle), called with ReturnLength == ProcessInformationClass
+# Instructions
+ VMProtect 3.x Anti-debug Method Improved
+# Features
+ Checksum ntoskrnl File
+ Checksum Code Section
+ Anti Debugger
+ Anti HardwareBreakpoint
+# Support
+ xp-win10 and x86/x64
