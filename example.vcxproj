@@ -158,6 +158,7 @@
     <ClInclude Include="XAntiDebug\crc32.h" />
     <ClInclude Include="XAntiDebug\internal.h" />
     <ClInclude Include="XAntiDebug\ldasm.h" />
+    <ClInclude Include="XAntiDebug\sdkext.h" />
     <ClInclude Include="XAntiDebug\wow64ext.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -174,6 +175,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="XAntiDebug\XAntiDebug.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="XAntiDebug\_wow64ext.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

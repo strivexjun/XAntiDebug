@@ -2,6 +2,8 @@
 
 #include "XAntiDebug.h"
 
+using namespace wow64ext;
+
 /*
  *	禁止目录重定向
  */
@@ -178,7 +180,7 @@ XAntiDebug::XAntiDebug(HMODULE moduleHandle, DWORD flags)
 	}
 
 	typedef LONG(__stdcall *fnRtlGetVersion)(PRTL_OSVERSIONINFOW lpVersionInformation);
-	fnRtlGetVersion pRtlGetVersion = (fnRtlGetVersion)GetProcAddress(GetModuleHandle(L"ntdll"), "RtlGetVersion");
+	fnRtlGetVersion pRtlGetVersion = (fnRtlGetVersion)GetProcAddress(GetModuleHandleW(L"ntdll"), "RtlGetVersion");
 
 	if (pRtlGetVersion)
 	{
@@ -364,14 +366,14 @@ XAD_STATUS XAntiDebug::XAD_Initialize()
 			// 首先获取 ZwQueryInformationProcess函数地址
 			//
 #ifndef _WIN64
-			InitWow64Ext();
+			//InitWow64Ext();
 #endif
-			_MyQueryInfomationProcess = (DWORD64)GetProcAddress64(GetModuleHandle64(XAD_NTDLL), "ZwQueryInformationProcess");
+			_MyQueryInfomationProcess = (DWORD64)Wow64GetProcAddress64(Wow64GetModuleHandle64(XAD_NTDLL), "ZwQueryInformationProcess");
 			if (_MyQueryInfomationProcess == NULL)
 			{
 				return XAD_ERROR_NTAPI;
 			}
-			_MyQueryInfomationProcess -= (DWORD64)GetModuleHandle64(XAD_NTDLL);
+			_MyQueryInfomationProcess -= (DWORD64)Wow64GetModuleHandle64(XAD_NTDLL);
 		}
 		else
 		{
@@ -390,7 +392,7 @@ XAD_STATUS XAntiDebug::XAD_Initialize()
 		if (_isArch64)
 		{
 			unsigned char pehead[XAD_PAGESIZE];
-			getMem64(pehead, GetModuleHandle64(XAD_NTDLL), XAD_PAGESIZE);
+			Wow64CopyMemory64(pehead, Wow64GetModuleHandle64(XAD_NTDLL), XAD_PAGESIZE);
 
 			PIMAGE_DOS_HEADER	pDosHead = (PIMAGE_DOS_HEADER)pehead;
 			if (pDosHead->e_magic != IMAGE_DOS_SIGNATURE)
@@ -746,8 +748,8 @@ BOOL XAntiDebug::XAD_ExecuteDetect()
 			DWORD64		status;
 
 #ifndef _WIN64
-			status = X64Call(
-				(DWORD64)_pfnSyscall64,
+			status = Wow64Call64(
+				_pfnSyscall64,
 				5,
 				(DWORD64)-1,
 				(DWORD64)0x1E,
@@ -782,8 +784,8 @@ BOOL XAntiDebug::XAD_ExecuteDetect()
 
 			DWORD64		bugCheck;
 #ifndef _WIN64
-			status = X64Call(
-				(DWORD64)_pfnSyscall64,
+			status = Wow64Call64(
+				_pfnSyscall64,
 				5,
 				(DWORD64)-1,
 				(DWORD64)0x1E,

@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+/.vs/XAntiDebug/v15
+/.vs/example/v15
+/.vs/ProjectSettings.json
+/.vs/slnx.sqlite

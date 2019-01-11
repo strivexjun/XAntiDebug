@@ -42,6 +42,9 @@
     <ClInclude Include="XAntiDebug\XAntiDebug.h">
       <Filter>XAntiDebug</Filter>
     </ClInclude>
+    <ClInclude Include="XAntiDebug\sdkext.h">
+      <Filter>XAntiDebug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -62,5 +65,10 @@
     <ClCompile Include="XAntiDebug\XAntiDebug.cpp">
       <Filter>XAntiDebug</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="XAntiDebug\_wow64ext.inl">
+      <Filter>XAntiDebug</Filter>
+    </None>
   </ItemGroup>
 </Project>

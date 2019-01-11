@@ -1,376 +1,241 @@
 /**
- *
- * WOW64Ext Library
- *
- * Copyright (c) 2014 ReWolf
- * http://blog.rewolf.pl/
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published
- * by the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
+*
+* WOW64Ext Library
+*
+* Copyright (c) 2014 ReWolf
+* http://blog.rewolf.pl/
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as published
+* by the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*
+*/
+
+
 #pragma once
+#include "sdkext.h"
 
-#include <windows.h>
 
-#ifndef STATUS_SUCCESS
-#   define STATUS_SUCCESS 0
+#ifdef _WIN64
+#error Cannot compile in 64-bit environment!
 #endif
 
-#pragma pack(push)
-#pragma pack(1)
-template <class T>
-struct _LIST_ENTRY_T
-{
-    T Flink;
-    T Blink;
-};
-
-template <class T>
-struct _UNICODE_STRING_T
-{
-    union
-    {
-        struct
-        {
-            WORD Length;
-            WORD MaximumLength;
-        };
-        T dummy;
-    };
-    T Buffer;
-};
-
-template <class T>
-struct _NT_TIB_T
-{
-    T ExceptionList;
-    T StackBase;
-    T StackLimit;
-    T SubSystemTib;
-    T FiberData;
-    T ArbitraryUserPointer;
-    T Self;
-};
-
-template <class T>
-struct _CLIENT_ID
-{
-    T UniqueProcess;
-    T UniqueThread;
-};
-
-template <class T>
-struct _TEB_T_
-{
-    _NT_TIB_T<T> NtTib;
-    T EnvironmentPointer;
-    _CLIENT_ID<T> ClientId;
-    T ActiveRpcHandle;
-    T ThreadLocalStoragePointer;
-    T ProcessEnvironmentBlock;
-    DWORD LastErrorValue;
-    DWORD CountOfOwnedCriticalSections;
-    T CsrClientThread;
-    T Win32ThreadInfo;
-    DWORD User32Reserved[26];
-    //rest of the structure is not defined for now, as it is not needed
-};
-
-template <class T>
-struct _LDR_DATA_TABLE_ENTRY_T
-{
-    _LIST_ENTRY_T<T> InLoadOrderLinks;
-    _LIST_ENTRY_T<T> InMemoryOrderLinks;
-    _LIST_ENTRY_T<T> InInitializationOrderLinks;
-    T DllBase;
-    T EntryPoint;
-    union
-    {
-        DWORD SizeOfImage;
-        T dummy01;
-    };
-    _UNICODE_STRING_T<T> FullDllName;
-    _UNICODE_STRING_T<T> BaseDllName;
-    DWORD Flags;
-    WORD LoadCount;
-    WORD TlsIndex;
-    union
-    {
-        _LIST_ENTRY_T<T> HashLinks;
-        struct 
-        {
-            T SectionPointer;
-            T CheckSum;
-        };
-    };
-    union
-    {
-        T LoadedImports;
-        DWORD TimeDateStamp;
-    };
-    T EntryPointActivationContext;
-    T PatchInformation;
-    _LIST_ENTRY_T<T> ForwarderLinks;
-    _LIST_ENTRY_T<T> ServiceTagLinks;
-    _LIST_ENTRY_T<T> StaticLinks;
-    T ContextInformation;
-    T OriginalBase;
-    _LARGE_INTEGER LoadTime;
-};
-
-template <class T>
-struct _PEB_LDR_DATA_T
-{
-    DWORD Length;
-    DWORD Initialized;
-    T SsHandle;
-    _LIST_ENTRY_T<T> InLoadOrderModuleList;
-    _LIST_ENTRY_T<T> InMemoryOrderModuleList;
-    _LIST_ENTRY_T<T> InInitializationOrderModuleList;
-    T EntryInProgress;
-    DWORD ShutdownInProgress;
-    T ShutdownThreadId;
-
-};
-
-template <class T, class NGF, int A>
-struct _PEB_T
-{
-    union
-    {
-        struct
-        {
-            BYTE InheritedAddressSpace;
-            BYTE ReadImageFileExecOptions;
-            BYTE BeingDebugged;
-            BYTE BitField;
-        };
-        T dummy01;
-    };
-    T Mutant;
-    T ImageBaseAddress;
-    T Ldr;
-    T ProcessParameters;
-    T SubSystemData;
-    T ProcessHeap;
-    T FastPebLock;
-    T AtlThunkSListPtr;
-    T IFEOKey;
-    T CrossProcessFlags;
-    T UserSharedInfoPtr;
-    DWORD SystemReserved;
-    DWORD AtlThunkSListPtr32;
-    T ApiSetMap;
-    T TlsExpansionCounter;
-    T TlsBitmap;
-    DWORD TlsBitmapBits[2];
-    T ReadOnlySharedMemoryBase;
-    T HotpatchInformation;
-    T ReadOnlyStaticServerData;
-    T AnsiCodePageData;
-    T OemCodePageData;
-    T UnicodeCaseTableData;
-    DWORD NumberOfProcessors;
-    union
-    {
-        DWORD NtGlobalFlag;
-        NGF dummy02;
-    };
-    LARGE_INTEGER CriticalSectionTimeout;
-    T HeapSegmentReserve;
-    T HeapSegmentCommit;
-    T HeapDeCommitTotalFreeThreshold;
-    T HeapDeCommitFreeBlockThreshold;
-    DWORD NumberOfHeaps;
-    DWORD MaximumNumberOfHeaps;
-    T ProcessHeaps;
-    T GdiSharedHandleTable;
-    T ProcessStarterHelper;
-    T GdiDCAttributeList;
-    T LoaderLock;
-    DWORD OSMajorVersion;
-    DWORD OSMinorVersion;
-    WORD OSBuildNumber;
-    WORD OSCSDVersion;
-    DWORD OSPlatformId;
-    DWORD ImageSubsystem;
-    DWORD ImageSubsystemMajorVersion;
-    T ImageSubsystemMinorVersion;
-    T ActiveProcessAffinityMask;
-    T GdiHandleBuffer[A];
-    T PostProcessInitRoutine; 
-    T TlsExpansionBitmap; 
-    DWORD TlsExpansionBitmapBits[32];
-    T SessionId;
-    ULARGE_INTEGER AppCompatFlags;
-    ULARGE_INTEGER AppCompatFlagsUser;
-    T pShimData;
-    T AppCompatInfo;
-    _UNICODE_STRING_T<T> CSDVersion;
-    T ActivationContextData;
-    T ProcessAssemblyStorageMap;
-    T SystemDefaultActivationContextData;
-    T SystemAssemblyStorageMap;
-    T MinimumStackCommit;
-    T FlsCallback;
-    _LIST_ENTRY_T<T> FlsListHead;
-    T FlsBitmap;
-    DWORD FlsBitmapBits[4];
-    T FlsHighIndex;
-    T WerRegistrationData;
-    T WerShipAssertPtr;
-    T pContextData;
-    T pImageHeaderHash;
-    T TracingFlags;
-};
-
-typedef _LDR_DATA_TABLE_ENTRY_T<DWORD> LDR_DATA_TABLE_ENTRY32;
-typedef _LDR_DATA_TABLE_ENTRY_T<DWORD64> LDR_DATA_TABLE_ENTRY64;
-
-typedef _TEB_T_<DWORD> TEB32;
-typedef _TEB_T_<DWORD64> TEB64;
-
-typedef _PEB_LDR_DATA_T<DWORD> PEB_LDR_DATA32;
-typedef _PEB_LDR_DATA_T<DWORD64> PEB_LDR_DATA64;
-
-typedef _PEB_T<DWORD, DWORD64, 34> PEB32;
-typedef _PEB_T<DWORD64, DWORD, 30> PEB64;
-
-struct _XSAVE_FORMAT64
-{
-    WORD ControlWord;
-    WORD StatusWord;
-    BYTE TagWord;
-    BYTE Reserved1;
-    WORD ErrorOpcode;
-    DWORD ErrorOffset;
-    WORD ErrorSelector;
-    WORD Reserved2;
-    DWORD DataOffset;
-    WORD DataSelector;
-    WORD Reserved3;
-    DWORD MxCsr;
-    DWORD MxCsr_Mask;
-    _M128A FloatRegisters[8];
-    _M128A XmmRegisters[16];
-    BYTE Reserved4[96];
-};
-
-struct _CONTEXT64
-{
-    DWORD64 P1Home;
-    DWORD64 P2Home;
-    DWORD64 P3Home;
-    DWORD64 P4Home;
-    DWORD64 P5Home;
-    DWORD64 P6Home;
-    DWORD ContextFlags;
-    DWORD MxCsr;
-    WORD SegCs;
-    WORD SegDs;
-    WORD SegEs;
-    WORD SegFs;
-    WORD SegGs;
-    WORD SegSs;
-    DWORD EFlags;
-    DWORD64 Dr0;
-    DWORD64 Dr1;
-    DWORD64 Dr2;
-    DWORD64 Dr3;
-    DWORD64 Dr6;
-    DWORD64 Dr7;
-    DWORD64 Rax;
-    DWORD64 Rcx;
-    DWORD64 Rdx;
-    DWORD64 Rbx;
-    DWORD64 Rsp;
-    DWORD64 Rbp;
-    DWORD64 Rsi;
-    DWORD64 Rdi;
-    DWORD64 R8;
-    DWORD64 R9;
-    DWORD64 R10;
-    DWORD64 R11;
-    DWORD64 R12;
-    DWORD64 R13;
-    DWORD64 R14;
-    DWORD64 R15;
-    DWORD64 Rip;
-    _XSAVE_FORMAT64 FltSave;
-    _M128A Header[2];
-    _M128A Legacy[8];
-    _M128A Xmm0;
-    _M128A Xmm1;
-    _M128A Xmm2;
-    _M128A Xmm3;
-    _M128A Xmm4;
-    _M128A Xmm5;
-    _M128A Xmm6;
-    _M128A Xmm7;
-    _M128A Xmm8;
-    _M128A Xmm9;
-    _M128A Xmm10;
-    _M128A Xmm11;
-    _M128A Xmm12;
-    _M128A Xmm13;
-    _M128A Xmm14;
-    _M128A Xmm15;
-    _M128A VectorRegister[26];
-    DWORD64 VectorControl;
-    DWORD64 DebugControl;
-    DWORD64 LastBranchToRip;
-    DWORD64 LastBranchFromRip;
-    DWORD64 LastExceptionToRip;
-    DWORD64 LastExceptionFromRip;
-};
-
-// Below defines for .ContextFlags field are taken from WinNT.h
-#ifndef CONTEXT_AMD64
-#define CONTEXT_AMD64 0x100000
-#endif
-
-#define CONTEXT64_CONTROL (CONTEXT_AMD64 | 0x1L)
-#define CONTEXT64_INTEGER (CONTEXT_AMD64 | 0x2L)
-#define CONTEXT64_SEGMENTS (CONTEXT_AMD64 | 0x4L)
-#define CONTEXT64_FLOATING_POINT  (CONTEXT_AMD64 | 0x8L)
-#define CONTEXT64_DEBUG_REGISTERS (CONTEXT_AMD64 | 0x10L)
-#define CONTEXT64_FULL (CONTEXT64_CONTROL | CONTEXT64_INTEGER | CONTEXT64_FLOATING_POINT)
-#define CONTEXT64_ALL (CONTEXT64_CONTROL | CONTEXT64_INTEGER | CONTEXT64_SEGMENTS | CONTEXT64_FLOATING_POINT | CONTEXT64_DEBUG_REGISTERS)
-#define CONTEXT64_XSTATE (CONTEXT_AMD64 | 0x20L)
-
-#pragma pack(pop)
-
-#ifdef WOW64EXT_EXPORTS
-#   define SPEC dllexport
+#ifdef _WINDLL
+#   define wow64ext_api __cdecl
+#   define wow64ext_pub extern"C" __declspec(dllexport)
 #else
-#   define SPEC dllimport
+#   define wow64ext_api __cdecl
+#   define wow64ext_pub extern"C"
 #endif
 
-extern "C"
+
+namespace wow64ext
 {
-	DWORD64 __cdecl X64Call(DWORD64 func, int argC, ...);
-	DWORD64 __cdecl GetModuleHandle64(wchar_t* lpModuleName);
-	DWORD64 __cdecl GetProcAddress64(DWORD64 hModule, char* funcName);
-	SIZE_T __cdecl VirtualQueryEx64(HANDLE hProcess, DWORD64 lpAddress, MEMORY_BASIC_INFORMATION64* lpBuffer, SIZE_T dwLength);
-	DWORD64 __cdecl VirtualAllocEx64(HANDLE hProcess, DWORD64 lpAddress, SIZE_T dwSize, DWORD flAllocationType, DWORD flProtect);
-	BOOL __cdecl VirtualFreeEx64(HANDLE hProcess, DWORD64 lpAddress, SIZE_T dwSize, DWORD dwFreeType);
-	BOOL __cdecl VirtualProtectEx64(HANDLE hProcess, DWORD64 lpAddress, SIZE_T dwSize, DWORD flNewProtect, DWORD* lpflOldProtect);
-	BOOL __cdecl ReadProcessMemory64(HANDLE hProcess, DWORD64 lpBaseAddress, LPVOID lpBuffer, SIZE_T nSize, SIZE_T *lpNumberOfBytesRead);
-	BOOL __cdecl WriteProcessMemory64(HANDLE hProcess, DWORD64 lpBaseAddress, LPVOID lpBuffer, SIZE_T nSize, SIZE_T *lpNumberOfBytesWritten);
-	BOOL __cdecl GetThreadContext64(HANDLE hThread, _CONTEXT64* lpContext);
-	BOOL __cdecl SetThreadContext64(HANDLE hThread, _CONTEXT64* lpContext);
-	VOID __cdecl SetLastErrorFromX64Call(DWORD64 status);
-	BOOL InitWow64Ext();
-	void getMem64(void* dstMem, DWORD64 srcMem, size_t sz);
+
+    using namespace sdkext;
+    
+    wow64ext_pub auto wow64ext_api Wow64CopyMemory64(
+        _Out_bytecap_(aBytes)   PVOID64 aDst,
+        _In_bytecount_(aBytes)  PVOID64 aSrc,
+        _In_                    UINT64  aBytes
+    )->VOID;
+
+    wow64ext_pub auto wow64ext_api Wow64CompareMemory64(
+        _In_bytecount_(aBytes)  PVOID64 aDst,
+        _In_bytecount_(aBytes)  PVOID64 aSrc,
+        _In_                    UINT64  aBytes
+    )->bool;
+
+    wow64ext_pub auto wow64ext_api Wow64Call64(
+        _In_                    PVOID64 aFunc,
+        _In_                    int     aArgsCount,
+        _In_opt_                ...     /*Args*/
+    )->UINT64;
+
+    wow64ext_pub auto wow64ext_api ZwWow64CurrentTeb64(
+    )->PVOID64 /*TEB64*/;
+
+    wow64ext_pub auto wow64ext_api ZwWow64CurrentPeb64(
+    )->PVOID64 /*PEB64*/;
+    
+    wow64ext_pub auto wow64ext_api Wow64GetModuleHandle64(
+        _In_                    LPCWSTR aModuleName
+    )->PVOID64;
+
+    wow64ext_pub auto wow64ext_api Wow64GetNtdll64(
+    )->PVOID64;
+
+    wow64ext_pub auto wow64ext_api Wow64GetLdrGetProcedureAddress64(
+    )->PVOID64;
+
+    wow64ext_pub auto wow64ext_api Wow64GetProcAddress64(
+        _In_                    PVOID64 aModule,
+        _In_                    LPCSTR  aProcName
+    )->PVOID64;
+
+    wow64ext_pub auto wow64ext_api Wow64SetLastErrorFromNtStatus(
+        NTSTATUS    aStatus
+    )->NTSTATUS;
+
+}
+
+namespace wow64ext
+{
+
+    wow64ext_pub NTSTATUS wow64ext_api NtWow64QueryVirtualMemory64(
+        _In_                HANDLE64    aProcessHandle,
+        _In_                PVOID64     aBaseAddress,
+        _In_ MEMORY_INFORMATION_CLASS   aMemoryInformationClass,
+        _Out_writes_bytes_(aMemoryInformationBytes) PVOID aMemoryInformation,
+        _In_                UINT64      aMemoryInformationBytes,
+        _Out_opt_           PUINT64     aReturnLength
+    );
+
+    wow64ext_pub NTSTATUS wow64ext_api NtWow64AllocateVirtualMemory64(
+        _In_                HANDLE64    aProcessHandle,
+        _In_bytecount_(*aRegionSize) PVOID64* aBaseAddress,
+        _In_                UINT64      aZeroBits,
+        _Inout_             PUINT64     aRegionSize,
+        _In_                UINT32      aAllocationType,
+        _In_                UINT32      aProtect
+    );
+
+    wow64ext_pub NTSTATUS wow64ext_api NtWow64FreeVirtualMemory64(
+        _In_                HANDLE64    aProcessHandle,
+        _Inout_             PVOID64*    aBaseAddress,
+        _Inout_             PUINT64     aRegionSize,
+        _In_                UINT32       aFreeType
+    );
+
+    wow64ext_pub NTSTATUS wow64ext_api NtWow64ProtectVirtualMemory64(
+        _In_                HANDLE64    aProcessHandle,
+        _Inout_             PVOID64 *   aBaseAddress,
+        _Inout_             PUINT64     aRegionSize,
+        _In_                UINT32      aNewProtect,
+        _Out_               PUINT32     aOldProtect
+    );
+
+    wow64ext_pub NTSTATUS wow64ext_api NtWow64ReadVirtualMemory64(
+        _In_                HANDLE64    aProcessHandle,
+        _In_opt_            PVOID64     aBaseAddress,
+        _Out_writes_bytes_(aBufferSize) PVOID aBuffer,
+        _In_                UINT64      aBufferSize,
+        _Out_opt_           PUINT64     aNumberOfBytesRead
+    );
+
+    wow64ext_pub NTSTATUS wow64ext_api NtWow64WriteVirtualMemory64(
+        _In_                HANDLE64    aProcessHandle,
+        _In_opt_            PVOID64     aBaseAddress,
+        _In_reads_bytes_(aBufferSize)   PVOID aBuffer,
+        _In_                UINT64      aBufferSize,
+        _Out_opt_           PUINT64     aNumberOfBytesWritten
+    );
+
+    wow64ext_pub NTSTATUS wow64ext_api NtWow64FlushInstructionCache64(
+        _In_                HANDLE64    aProcessHandle,
+        _In_opt_            PVOID64     aBaseAddress,
+        _In_                UINT64      aLength
+    );
+
+    wow64ext_pub NTSTATUS wow64ext_api NtWow64MapViewOfSection64(
+        _In_                HANDLE64        aSectionHandle,
+        _In_                HANDLE64        aProcessHandle,
+        _Inout_bytecap_(*aViewSize) PVOID64 * aBaseAddress,
+        _In_                UINT64          aZeroBits,
+        _In_                UINT64          aCommitSize,
+        _Inout_opt_         PLARGE_INTEGER  aSectionOffset,
+        _Inout_             PUINT64         aViewSize,
+        _In_                SECTION_INHERIT aInheritDisposition,
+        _In_                UINT32          aAllocationType,
+        _In_                UINT32          aWin32Protect
+    );
+
+    wow64ext_pub NTSTATUS wow64ext_api NtWow64UnmapViewOfSection64(
+        _In_                HANDLE64    aProcessHandle,
+        _In_opt_            PVOID64     aBaseAddress
+    );
+
+    wow64ext_pub NTSTATUS wow64ext_api NtWow64GetContextThread64(
+        _In_                HANDLE64    aThreadHandle,
+        _Out_               PCONTEXT64  aThreadContext
+    );
+
+    wow64ext_pub NTSTATUS wow64ext_api NtWow64SetContextThread64(
+        _In_                HANDLE64    aThreadHandle,
+        _In_                PCONTEXT64  aThreadContext
+    );
+
+    wow64ext_pub NTSTATUS wow64ext_api NtWow64QueryInformationProcess64(
+        _In_                HANDLE64                    aProcessHandle,
+        _In_                PROCESSINFOCLASS            aProcessInformationClass,
+        _Out_writes_bytes_(aProcessInformationBytes) PVOID aProcessInformation,
+        _In_                UINT32                      aProcessInformationBytes,
+        _Out_opt_           PUINT32                     aReturnLength
+    );
+
+    wow64ext_pub UINT64  wow64ext_api Wow64VirtualQueryEx64(
+        _In_                HANDLE64                    aProcess,
+        _In_                PVOID64                     aBaseAddress,
+        _Out_               PMEMORY_BASIC_INFORMATION   aBuffer,
+        _In_                UINT64                      aBytes
+    );
+
+    wow64ext_pub PVOID64 wow64ext_api Wow64VirtualAllocEx64(
+        _In_                HANDLE64    aProcess,
+        _In_opt_            PVOID64     aBaseAddress,
+        _In_                UINT64      aSize,
+        _In_                UINT32      aAllocationType,
+        _In_                UINT32      aProtect
+    );
+
+    wow64ext_pub BOOL    wow64ext_api Wow64VirtualFreeEx64(
+        _In_                HANDLE64    aProcess,
+        _In_                PVOID64     aBaseAddress,
+        _In_                UINT64      aSize,
+        _In_                UINT32      aFreeType
+    );
+
+    wow64ext_pub BOOL    wow64ext_api Wow64VirtualProtectEx64(
+        _In_                HANDLE64    aProcess,
+        _In_                PVOID64     aBaseAddress,
+        _In_                UINT64      aSize,
+        _In_                UINT32      aNewProtect,
+        _Out_               PUINT32     aOldProtect
+    );
+
+    wow64ext_pub BOOL    wow64ext_api Wow64ReadProcessMemory64(
+        _In_                HANDLE64    aProcess,
+        _In_                PVOID64     aBaseAddress,
+        _Out_               PVOID       aBuffer,
+        _In_                UINT64      aSize,
+        _Out_               PUINT64     aNumberOfBytesRead
+    );
+
+    wow64ext_pub BOOL    wow64ext_api Wow64WriteProcessMemory64(
+        _In_                HANDLE64    aProcess,
+        _In_                PVOID64     aBaseAddress,
+        _In_                PVOID       aBuffer,
+        _In_                UINT64      aSize,
+        _Out_               PUINT64     aNumberOfBytesWritten
+    );
+
+    wow64ext_pub BOOL    wow64ext_api Wow64GetThreadContext64(
+        _In_                HANDLE64    aThread,
+        _Out_               PCONTEXT64  aContext
+    );
+
+    wow64ext_pub BOOL    wow64ext_api Wow64SetThreadContext64(
+        _In_                HANDLE64    aThread,
+        _In_                PCONTEXT64  aContext
+    );
+
 }
