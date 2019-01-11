@@ -22,7 +22,7 @@
 #include "crc32.h"
 
 #ifndef _WIN64
-#include "wow64ext.h"
+#include <wow64ext.h>
 #endif // !_WIN64
 
 
@@ -63,5 +63,5 @@ private:
 	fn_SysCall32	pfnSyscall32 = NULL;
 	fn_SysCall64	pfnSyscall64 = NULL;
 };
-
+void getMem64(void* dstMem, DWORD64 srcMem, size_t sz);
 #endif

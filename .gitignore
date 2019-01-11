@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+*.ipch
+*.db
+*.suo
+*.sqlite
+*.json
+/XAntiDebug/resource.h

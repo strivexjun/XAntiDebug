@@ -16,6 +16,8 @@
 
 #include "XAntiDebug.h"
 
+using namespace wow64ext;
+
 //
 //禁止目录重定向
 //
@@ -105,7 +107,7 @@ XAD_STATUS XAntiDebug::initialize()
 	{
 		_isX64 = TRUE;
 #ifndef _WIN64
-		InitWow64Ext();
+		//InitWow64ext();
 #endif // !_WIN64
 
 	}
@@ -113,21 +115,21 @@ XAD_STATUS XAntiDebug::initialize()
 	// 获取ntapi地址
 	if (_isX64)
 	{
-		_MyQueryInfomationProcess  = (DWORD64)GetProcAddress64(GetModuleHandle64(XAD_NTDLL), "ZwQueryInformationProcess");
+		_MyQueryInfomationProcess  = (DWORD64)Wow64GetProcAddress64(Wow64GetModuleHandle64(XAD_NTDLL), "ZwQueryInformationProcess");
 		if (_MyQueryInfomationProcess == NULL)
 		{
 			return XAD_ERROR_NTAPI;
 		}
-		_MyQueryInfomationProcess -= (DWORD64)GetModuleHandle64(XAD_NTDLL);
+		_MyQueryInfomationProcess -= (DWORD64)Wow64GetModuleHandle64(XAD_NTDLL);
 	}
 	else
 	{
-		_MyQueryInfomationProcess = (DWORD)GetProcAddress(GetModuleHandle(XAD_NTDLL), "ZwQueryInformationProcess");
+		_MyQueryInfomationProcess = (DWORD)GetProcAddress(GetModuleHandleW(XAD_NTDLL), "ZwQueryInformationProcess");
 		if (_MyQueryInfomationProcess == NULL)
 		{
 			return XAD_ERROR_NTAPI;
 		}
-		_MyQueryInfomationProcess -= (DWORD)GetModuleHandle(XAD_NTDLL);
+		_MyQueryInfomationProcess -= (DWORD)GetModuleHandleW(XAD_NTDLL);
 	}
 
 
@@ -136,7 +138,7 @@ XAD_STATUS XAntiDebug::initialize()
 	if (_isX64)
 	{
 		unsigned char pehead[XAD_PEHAD];
-		getMem64(pehead, GetModuleHandle64(XAD_NTDLL), XAD_PEHAD);
+		getMem64(pehead, (DWORD64)Wow64GetModuleHandle64(XAD_NTDLL), XAD_PEHAD);
 
 		PIMAGE_DOS_HEADER	pDosHead = (PIMAGE_DOS_HEADER)pehead;
 		if (pDosHead->e_magic != IMAGE_DOS_SIGNATURE)
@@ -163,7 +165,7 @@ XAD_STATUS XAntiDebug::initialize()
 	else // else 32bit 
 	{
 
-		PIMAGE_DOS_HEADER	pDosHead = (PIMAGE_DOS_HEADER)GetModuleHandle(XAD_NTDLL);
+		PIMAGE_DOS_HEADER	pDosHead = (PIMAGE_DOS_HEADER)GetModuleHandleW(XAD_NTDLL);
 		if (pDosHead->e_magic != IMAGE_DOS_SIGNATURE)
 			return XAD_ERROR_FILEOFFSET;
 
@@ -193,9 +195,9 @@ XAD_STATUS XAntiDebug::initialize()
 	unsigned char opcode[64];
 	DWORD readd;
 	wchar_t sysDir[MAX_PATH] = { 0 };
-	GetSystemDirectory(sysDir, MAX_PATH);
-	wcscat(sysDir, L"\\");
-	wcscat(sysDir,XAD_NTDLL);
+	GetSystemDirectoryW(sysDir, MAX_PATH);
+	wcscat_s(sysDir, L"\\");
+	wcscat_s(sysDir,XAD_NTDLL);
 
 #ifndef _WIN64
 	//disable wow64 redirect the directory
@@ -203,7 +205,7 @@ XAD_STATUS XAntiDebug::initialize()
 		safeWow64DisableDirectory(_wow64FsReDirectory);
 #endif 
 
-	HANDLE	hFile = CreateFile(sysDir, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE	hFile = CreateFileW(sysDir, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
 		return XAD_ERROR_OPENNTDLL;
@@ -323,7 +325,7 @@ BOOL XAntiDebug::isDebuging()
 		DWORD64		status;
 
 #ifndef _WIN64
-		status = X64Call((DWORD64)pfnSyscall64, 5,
+		status = Wow64Call64(pfnSyscall64, 5,
 			(DWORD64)-1,   //handle
 			(DWORD64)0x1E, // processObjectHandle
 			(DWORD64)&processInformation,
@@ -359,7 +361,7 @@ BOOL XAntiDebug::isDebuging()
 		//利用内核二次覆盖的BUG来检测反调试，在利用这个漏洞之前计算一遍页面CRC
 		DWORD64		bugCheck;
 #ifndef _WIN64
-		status = X64Call((DWORD64)pfnSyscall64, 5,
+		status = Wow64Call64(pfnSyscall64, 5,
 			(DWORD64)-1,
 			(DWORD64)0x1E,
 			(DWORD64)&bugCheck,
