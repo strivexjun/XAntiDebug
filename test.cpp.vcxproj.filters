@@ -53,5 +53,8 @@
     <ClInclude Include="XAntiDebug\crc32.h">
       <Filter>XAntiDebug</Filter>
     </ClInclude>
+    <ClInclude Include="XAntiDebug\sdkext.h">
+      <Filter>XAntiDebug</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

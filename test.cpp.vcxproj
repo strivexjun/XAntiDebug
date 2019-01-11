@@ -158,6 +158,7 @@
     <ClInclude Include="XAntiDebug\crc32.h" />
     <ClInclude Include="XAntiDebug\internal.h" />
     <ClInclude Include="XAntiDebug\ldasm.h" />
+    <ClInclude Include="XAntiDebug\sdkext.h" />
     <ClInclude Include="XAntiDebug\wow64ext.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>

@@ -36,3 +36,4 @@
 *.sqlite
 *.json
 /XAntiDebug/resource.h
+*.opendb
