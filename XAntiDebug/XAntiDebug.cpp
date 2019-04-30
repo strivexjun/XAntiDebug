@@ -252,7 +252,7 @@ XAD_STATUS XAntiDebug::XAD_Initialize()
 		return XAD_OK;
 	}
 
-	if ((_flags & FLAG_CHECKSUM_NTOSKRNL) && _major >= 6)
+	if ((_flags & FLAG_CHECKSUM_NTOSKRNL) && _major >= 6 && _minor >= 1)
 	{
 		//
 		//检测正在运行的NTOS文件路径. 因NT函数枚举出来的路径是CHAR，这里都用CHAR
@@ -342,8 +342,12 @@ XAD_STATUS XAntiDebug::XAD_Initialize()
 
 			for (size_t Index = 0; Index < ntHead->FileHeader.NumberOfSections; Index++)
 			{
-				if ((secHead->Characteristics & IMAGE_SCN_MEM_EXECUTE) &&
-					(secHead->Characteristics & IMAGE_SCN_MEM_READ))
+				//
+				//可读、不可写的区段默认全部校验
+				//
+
+				if ((secHead->Characteristics & IMAGE_SCN_MEM_READ) &&
+					!(secHead->Characteristics & IMAGE_SCN_MEM_WRITE))
 				{
 					codeSection.m_va = (PVOID)((DWORD_PTR)_moduleHandle + secHead->VirtualAddress);
 					codeSection.m_size = secHead->Misc.VirtualSize;
@@ -375,12 +379,16 @@ XAD_STATUS XAntiDebug::XAD_Initialize()
 		}
 		else
 		{
+#ifndef _WIN64
 			_MyQueryInfomationProcess = (DWORD)GetProcAddress(GetModuleHandleW(XAD_NTDLL), "ZwQueryInformationProcess");
 			if (_MyQueryInfomationProcess == NULL)
 			{
 				return XAD_ERROR_NTAPI;
 			}
 			_MyQueryInfomationProcess -= (DWORD)GetModuleHandleW(XAD_NTDLL);
+#else
+			__debugbreak();
+#endif
 		}
 
 		//
@@ -562,7 +570,7 @@ BOOL XAntiDebug::XAD_ExecuteDetect()
 {
 	BOOL       result = FALSE;
 
-	if ((_flags & FLAG_CHECKSUM_NTOSKRNL) && _major >= 6)
+	if ((_flags & FLAG_CHECKSUM_NTOSKRNL) && _major >= 6 && _minor >= 1)
 	{
 		WCHAR	pwszSourceFile[MAX_PATH];
 		SHAnsiToUnicode(_ntosPath, pwszSourceFile, MAX_PATH);
@@ -682,7 +690,7 @@ BOOL XAntiDebug::XAD_ExecuteDetect()
 
 		//////////////////////////////////////////////////////////////////////////
 		__try{
-			CloseHandle((HANDLE)0xDEADC0DE);
+			CloseHandle(ULongToHandle(0xDEADC0DE));
 		}
 		__except (EXCEPTION_EXECUTE_HANDLER){
 			return TRUE;

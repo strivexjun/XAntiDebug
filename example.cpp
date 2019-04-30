@@ -14,7 +14,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//
 
 	XAD_STATUS		status;
-	XAntiDebug		antiDbg(GetModuleHandle(NULL), FLAG_DETECT_DEBUGGER | FLAG_DETECT_HARDWAREBREAKPOINT);
+	XAntiDebug		antiDbg(GetModuleHandle(NULL), FLAG_FULLON);
 	BOOL			result;
 
 	//
@@ -30,10 +30,15 @@ int _tmain(int argc, _TCHAR* argv[])
 	//
 	// µ÷ÓÃ¼ì²â
 	//
-	result = antiDbg.XAD_ExecuteDetect();
-	printf("result = %s\n", result ? "true" : "false");
 
-	getchar();
+	for (;;)
+	{
+		result = antiDbg.XAD_ExecuteDetect();
+		printf("result = %s\n", result ? "true" : "false");
+
+		getchar();
+	}
+
 	return 0;
 }
 
