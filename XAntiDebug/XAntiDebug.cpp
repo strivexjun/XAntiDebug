@@ -178,7 +178,7 @@ XAntiDebug::XAntiDebug(HMODULE moduleHandle, DWORD flags)
 	}
 
 	typedef LONG(__stdcall *fnRtlGetVersion)(PRTL_OSVERSIONINFOW lpVersionInformation);
-	fnRtlGetVersion pRtlGetVersion = (fnRtlGetVersion)GetProcAddress(GetModuleHandle(L"ntdll"), "RtlGetVersion");
+	fnRtlGetVersion pRtlGetVersion = (fnRtlGetVersion)GetProcAddress(GetModuleHandle(TEXT("ntdll")), "RtlGetVersion");
 
 	if (pRtlGetVersion)
 	{

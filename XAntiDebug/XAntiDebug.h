@@ -3,7 +3,6 @@
 #ifndef _XANTIDEBUG_H
 #define _XANTIDEBUG_H
 
-#define _CRT_SECURE_NO_WARNINGS
 
 #include <vector>
 #include <windows.h>
